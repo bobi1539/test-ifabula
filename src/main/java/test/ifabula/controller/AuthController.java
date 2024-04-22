@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import test.ifabula.contant.Endpoint;
+import test.ifabula.dto.request.LoginRequestDto;
 import test.ifabula.dto.request.RegisterRequestDto;
+import test.ifabula.dto.response.LoginResponseDto;
 import test.ifabula.dto.response.RegisterResponseDto;
 import test.ifabula.service.UserService;
 
@@ -24,5 +26,12 @@ public class AuthController {
             @RequestBody @Valid RegisterRequestDto requestDto
     ) {
         return userService.register(requestDto);
+    }
+
+    @PostMapping("/login")
+    public LoginResponseDto login(
+            @RequestBody @Valid LoginRequestDto requestDto
+    ) {
+        return userService.login(requestDto);
     }
 }

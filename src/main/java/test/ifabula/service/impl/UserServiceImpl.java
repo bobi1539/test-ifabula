@@ -2,10 +2,13 @@ package test.ifabula.service.impl;
 
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import test.ifabula.contant.GlobalMessage;
+import test.ifabula.dto.request.LoginRequestDto;
 import test.ifabula.dto.request.RegisterRequestDto;
+import test.ifabula.dto.response.LoginResponseDto;
 import test.ifabula.dto.response.RegisterResponseDto;
 import test.ifabula.entity.User;
 import test.ifabula.exception.BusinessException;
@@ -23,6 +26,9 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${api.key}")
+    private String apiKey;
+
     @Override
     public RegisterResponseDto register(RegisterRequestDto requestDto) {
         validateEmail(requestDto.getEmail());
@@ -30,6 +36,13 @@ public class UserServiceImpl implements UserService {
         validatePassword(requestDto.getPassword());
         User user = saveUser(requestDto);
         return mapUserToResponse(user);
+    }
+
+    @Override
+    public LoginResponseDto login(LoginRequestDto requestDto) {
+        User user = findUserByEmail(requestDto.getEmail());
+        verifyPassword(requestDto.getPassword(), user.getPassword());
+        return mapLoginResponse(user.getId());
     }
 
     private void validateEmail(String email) {
@@ -41,7 +54,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private void checkEmailIsRegistered(String email) {
-        Optional<User> optionalUser = userRepository.findByEmail(email);
+        Optional<User> optionalUser = userRepository.findByEmailAndIsDeleted(email, false);
         if (optionalUser.isPresent()) {
             throw new BusinessException(GlobalMessage.EMAIL_IS_REGISTERED);
         }
@@ -86,8 +99,29 @@ public class UserServiceImpl implements UserService {
         return RegisterResponseDto.builder()
                 .email(user.getEmail())
                 .createdAt(user.getCreatedAt())
+                .createdBy(user.getCreatedBy())
                 .updatedAt(user.getUpdatedAt())
+                .updatedBy(user.getUpdatedBy())
                 .isDeleted(user.isDeleted())
+                .build();
+    }
+
+    private User findUserByEmail(String email) {
+        return userRepository.findByEmailAndIsDeleted(email, false)
+                .orElseThrow(() -> new BusinessException(GlobalMessage.WRONG_EMAIL_OR_PASSWORD));
+    }
+
+    private void verifyPassword(String password, String hashPassword) {
+        boolean matches = passwordEncoder.matches(password, hashPassword);
+        if (!matches) {
+            throw new BusinessException(GlobalMessage.WRONG_EMAIL_OR_PASSWORD);
+        }
+    }
+
+    private LoginResponseDto mapLoginResponse(Long userId) {
+        return LoginResponseDto.builder()
+                .userId(Util.encodeToBase64(userId.toString()))
+                .token(Util.encodeToBase64(apiKey))
                 .build();
     }
 }

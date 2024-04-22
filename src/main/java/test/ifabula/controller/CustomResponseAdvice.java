@@ -12,6 +12,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 @RestControllerAdvice(basePackages = "test.ifabula.controller")
 public class CustomResponseAdvice extends BaseController implements ResponseBodyAdvice<Object> {
+
     @Override
     public boolean supports(
             @NonNull MethodParameter returnType,

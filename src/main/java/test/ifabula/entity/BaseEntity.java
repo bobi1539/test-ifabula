@@ -24,9 +24,15 @@ public abstract class BaseEntity {
     @CreationTimestamp
     protected Timestamp createdAt;
 
+    @Column(name = "created_by")
+    protected Long createdBy;
+
     @Column(name = "updated_at")
     @UpdateTimestamp
     protected Timestamp updatedAt;
+
+    @Column(name = "updated_by")
+    protected Long updatedBy;
 
     @Column(name = "is_deleted", columnDefinition = "boolean default false")
     protected boolean isDeleted = false;

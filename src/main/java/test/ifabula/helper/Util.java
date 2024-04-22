@@ -3,6 +3,7 @@ package test.ifabula.helper;
 import test.ifabula.contant.GlobalMessage;
 import test.ifabula.exception.BusinessException;
 
+import java.util.Base64;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,5 +26,9 @@ public final class Util {
         Pattern pattern = Pattern.compile("[^a-zA-Z0-9]");
         Matcher matcher = pattern.matcher(value);
         return matcher.find();
+    }
+
+    public static String encodeToBase64(String value) {
+        return Base64.getEncoder().encodeToString(value.getBytes());
     }
 }

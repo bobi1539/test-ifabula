@@ -5,7 +5,7 @@ import test.ifabula.contant.GlobalMessage;
 import test.ifabula.dto.response.BaseResponse;
 
 @ControllerAdvice
-public class BaseController {
+public abstract class BaseController {
 
     public static <T> BaseResponse<T> buildSuccessResponse(T object) {
         return BaseResponse.<T>builder()

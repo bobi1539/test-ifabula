@@ -1,0 +1,18 @@
+server:
+  port: 8080
+  host: localhost:8080
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: bobirival
+    password: password@147
+    url: jdbc:postgresql://localhost:5432/test-ifabula
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+api:
+  key: RGNYpOvJK5VfvRKzPNVQQ7Xh2ZXMBKdol8q1qtBpUdgUhG3P2d

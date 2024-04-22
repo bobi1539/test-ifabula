@@ -15,6 +15,8 @@ import java.sql.Timestamp;
 @SuperBuilder
 public abstract class BaseEntityResponseDto {
     protected Timestamp createdAt;
+    protected Long createdBy;
     protected Timestamp updatedAt;
+    protected Long updatedBy;
     protected boolean isDeleted;
 }
