@@ -8,5 +8,6 @@ public final class Endpoint {
         throw new BusinessException(GlobalMessage.CANNOT_INSTANCE_HELPER_CLASS);
     }
 
-    public static final String AUTH = "/auth";
+    public static final String BASE_ENDPOINT = "/api";
+    public static final String AUTH = BASE_ENDPOINT + "/auth";
 }
