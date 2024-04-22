@@ -2,9 +2,10 @@ package test.ifabula.service.impl;
 
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import test.ifabula.contant.AccountType;
+import test.ifabula.contant.Constant;
 import test.ifabula.contant.GlobalMessage;
 import test.ifabula.dto.request.LoginRequestDto;
 import test.ifabula.dto.request.RegisterRequestDto;
@@ -14,20 +15,17 @@ import test.ifabula.entity.User;
 import test.ifabula.exception.BusinessException;
 import test.ifabula.helper.Util;
 import test.ifabula.repository.UserRepository;
-import test.ifabula.service.UserService;
+import test.ifabula.service.AuthService;
 
 import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Service
 @AllArgsConstructor(onConstructor = @__(@Autowired))
-public class UserServiceImpl implements UserService {
+public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
-    @Value("${api.key}")
-    private String apiKey;
 
     @Override
     public RegisterResponseDto register(RegisterRequestDto requestDto) {
@@ -42,7 +40,7 @@ public class UserServiceImpl implements UserService {
     public LoginResponseDto login(LoginRequestDto requestDto) {
         User user = findUserByEmail(requestDto.getEmail());
         verifyPassword(requestDto.getPassword(), user.getPassword());
-        return mapLoginResponse(user.getId());
+        return mapLoginResponse(user);
     }
 
     private void validateEmail(String email) {
@@ -88,6 +86,7 @@ public class UserServiceImpl implements UserService {
         return User.builder()
                 .email(requestDto.getEmail())
                 .password(hashPassword(requestDto.getPassword()))
+                .accountType(AccountType.CUSTOMER.value)
                 .build();
     }
 
@@ -98,6 +97,7 @@ public class UserServiceImpl implements UserService {
     private RegisterResponseDto mapUserToResponse(User user) {
         return RegisterResponseDto.builder()
                 .email(user.getEmail())
+                .accountType(user.getAccountType())
                 .createdAt(user.getCreatedAt())
                 .createdBy(user.getCreatedBy())
                 .updatedAt(user.getUpdatedAt())
@@ -118,10 +118,12 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private LoginResponseDto mapLoginResponse(Long userId) {
+    private LoginResponseDto mapLoginResponse(User user) {
         return LoginResponseDto.builder()
-                .userId(Util.encodeToBase64(userId.toString()))
-                .token(Util.encodeToBase64(apiKey))
+                .userId(Util.encodeToBase64(user.getId().toString()))
+                .accountType(user.getAccountType())
+                .apiKeyName(Constant.X_API_KEY)
+                .apiKey(Util.encodeToBase64(Constant.API_KEY))
                 .build();
     }
 }

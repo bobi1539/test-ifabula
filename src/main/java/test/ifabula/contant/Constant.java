@@ -9,4 +9,6 @@ public final class Constant {
     }
 
     public static final String ERROR = "Error : ";
+    public static final String X_API_KEY = "X_API_KEY";
+    public static final String API_KEY = "RGNYpOvJK5VfvRKzPNVQQ7Xh2ZXMBKdol8q1qtBpUdgUhG3P2d";
 }

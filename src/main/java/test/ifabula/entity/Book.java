@@ -13,20 +13,20 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @Entity
-@Table(name = "m_user")
-public class User extends BaseEntity {
+@Table(name = "m_book")
+public class Book extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "email")
-    private String email;
+    @Column(name = "title")
+    private String title;
 
-    @Column(name = "password")
-    private String password;
+    @Column(name = "description")
+    private String description;
 
-    @Column(name = "account_type")
-    private String accountType;
+    @Column(name = "is_borrow")
+    private boolean isBorrow = false;
 }

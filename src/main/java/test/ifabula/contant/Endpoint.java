@@ -10,4 +10,5 @@ public final class Endpoint {
 
     public static final String BASE_ENDPOINT = "/api";
     public static final String AUTH = BASE_ENDPOINT + "/auth";
+    public static final String BOOK = BASE_ENDPOINT + "/books";
 }

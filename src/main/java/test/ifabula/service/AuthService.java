@@ -5,7 +5,7 @@ import test.ifabula.dto.request.RegisterRequestDto;
 import test.ifabula.dto.response.LoginResponseDto;
 import test.ifabula.dto.response.RegisterResponseDto;
 
-public interface UserService {
+public interface AuthService {
 
     RegisterResponseDto register(RegisterRequestDto requestDto);
 

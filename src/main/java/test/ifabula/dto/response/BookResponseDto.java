@@ -11,7 +11,9 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @SuperBuilder
-public class RegisterResponseDto extends BaseEntityResponseDto {
-    private String email;
-    private String accountType;
+public class BookResponseDto extends BaseEntityResponseDto {
+    private Long id;
+    private String title;
+    private String description;
+    private boolean isBorrow;
 }

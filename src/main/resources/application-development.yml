@@ -14,5 +14,3 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-api:
-  key: RGNYpOvJK5VfvRKzPNVQQ7Xh2ZXMBKdol8q1qtBpUdgUhG3P2d

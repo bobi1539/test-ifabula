@@ -12,26 +12,26 @@ import test.ifabula.dto.request.LoginRequestDto;
 import test.ifabula.dto.request.RegisterRequestDto;
 import test.ifabula.dto.response.LoginResponseDto;
 import test.ifabula.dto.response.RegisterResponseDto;
-import test.ifabula.service.UserService;
+import test.ifabula.service.AuthService;
 
 @RestController
 @RequestMapping(Endpoint.AUTH)
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class AuthController {
 
-    private final UserService userService;
+    private final AuthService authService;
 
     @PostMapping("/register")
     public RegisterResponseDto register(
             @RequestBody @Valid RegisterRequestDto requestDto
     ) {
-        return userService.register(requestDto);
+        return authService.register(requestDto);
     }
 
     @PostMapping("/login")
     public LoginResponseDto login(
             @RequestBody @Valid LoginRequestDto requestDto
     ) {
-        return userService.login(requestDto);
+        return authService.login(requestDto);
     }
 }

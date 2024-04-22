@@ -31,4 +31,9 @@ public final class Util {
     public static String encodeToBase64(String value) {
         return Base64.getEncoder().encodeToString(value.getBytes());
     }
+
+    public static String decodeFromBase64(String base64) {
+        byte[] decodeBytes = Base64.getDecoder().decode(base64);
+        return new String(decodeBytes);
+    }
 }

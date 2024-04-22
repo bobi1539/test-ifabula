@@ -9,5 +9,7 @@ import lombok.*;
 @Builder
 public class LoginResponseDto {
     private String userId;
-    private String token;
+    private String accountType;
+    private String apiKeyName;
+    private String apiKey;
 }

@@ -6,12 +6,18 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDateTime;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @SuperBuilder
-public class RegisterResponseDto extends BaseEntityResponseDto {
-    private String email;
-    private String accountType;
+public class BorrowBookResponseDto {
+    private Long id;
+    private BookResponseDto book;
+    private Long userId;
+    private LocalDateTime borrowDate;
+    private LocalDateTime returnDate;
+    private boolean isReturn;
 }
