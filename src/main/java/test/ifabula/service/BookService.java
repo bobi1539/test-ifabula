@@ -18,7 +18,7 @@ public interface BookService {
 
     BookResponseDto getById(Long id);
 
-    List<BorrowBookResponseDto> getBorrow(Long userId, boolean isReturn);
+    List<BorrowBookResponseDto> getBorrow(Long userId, Boolean isReturn);
 
     BorrowBookResponseDto returnBook(ReturnBookRequestDto requestDto);
 }

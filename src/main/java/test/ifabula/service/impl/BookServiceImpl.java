@@ -70,7 +70,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<BorrowBookResponseDto> getBorrow(Long userId, boolean isReturn) {
+    public List<BorrowBookResponseDto> getBorrow(Long userId, Boolean isReturn) {
         List<BorrowBook> borrowBooks = borrowBookRepository.findAll(searchBy(userId, isReturn));
         return borrowBooks.stream().map(this::mapBorrowBookResponse).toList();
     }
@@ -178,8 +178,9 @@ public class BookServiceImpl implements BookService {
         }
     }
 
-    private Specification<BorrowBook> searchBy(Long userId, boolean isReturn) {
-        Specification<BorrowBook> specification = SpecificationUtil.searchAttributeObject("user", findUserById(userId));
+    private Specification<BorrowBook> searchBy(Long userId, Boolean isReturn) {
+        User user = userRepository.findByIdAndIsDeleted(userId, false).orElse(null);
+        Specification<BorrowBook> specification = SpecificationUtil.searchAttributeObject("user", user);
         return specification
                 .and(SpecificationUtil.searchAttributeBoolean("isReturn", isReturn))
                 .and(SpecificationUtil.searchAttributeBoolean("isDeleted", false));

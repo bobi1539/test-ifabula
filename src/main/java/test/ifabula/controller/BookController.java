@@ -49,8 +49,8 @@ public class BookController {
 
     @GetMapping("/borrow")
     public List<BorrowBookResponseDto> getBorrow(
-            @RequestParam Long userId,
-            @RequestParam boolean isReturn
+            @RequestParam(required = false) Long userId,
+            @RequestParam(required = false) Boolean isReturn
     ) {
         return bookService.getBorrow(userId, isReturn);
     }

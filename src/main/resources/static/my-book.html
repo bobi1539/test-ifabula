@@ -79,7 +79,9 @@
             <label for="returnDate" class="form-label">Tanggal Kembali</label>
             <input type="text" class="form-control" id="returnDate" readonly />
           </div>
-          <button class="btn btn-primary col-md-6">Kembalikan Buku</button>
+          <button class="btn btn-primary col-md-6" onclick="returnBook()">
+            Kembalikan Buku
+          </button>
         </div>
       </div>
     </div>
@@ -132,6 +134,39 @@
           },
         });
       });
+
+      function returnBook() {
+        const urlReturnBook = "http://localhost:8080/api/books/return";
+        const borrowId = $("#borrowId").val();
+        const jsonData = JSON.stringify({
+          borrowId: borrowId,
+        });
+        const alert = $("#alert");
+        $.ajax({
+          url: urlReturnBook,
+          type: "POST",
+          contentType: "application/json",
+          data: jsonData,
+          success: function (data) {
+            const message =
+              "<div class='alert alert-success' role='alert'>" +
+              data.message +
+              "</div>";
+            alert.empty();
+            alert.append(message);
+            $("#div-card").empty();
+          },
+          error: function (xhr, status, error) {
+            console.error("Error: ", error);
+            const message =
+              "<div class='alert alert-danger' role='alert'>" +
+              xhr.responseJSON.message +
+              "</div>";
+            alert.empty();
+            alert.append(message);
+          },
+        });
+      }
     </script>
   </body>
 </html>
