@@ -51,6 +51,8 @@
               <li class="nav-item">
                 <a class="nav-link" href="/my-book.html">Buku Saya</a>
               </li>
+              <li class="nav-item" id="nav-item-book"></li>
+              <li class="nav-item" id="nav-item-borrow-book"></li>
               <li class="nav-item">
                 <a class="nav-link" href="#" onclick="logout()">Logout</a>
               </li>
@@ -141,6 +143,16 @@
       }
 
       $(document).ready(function () {
+        const accountType = getCookieValue("accountType");
+        if (accountType == "admin") {
+          $("#nav-item-book").append(
+            "<a class='nav-link' href='/book.html'>Data Buku</a>"
+          );
+          $("#nav-item-borrow-book").append(
+            "<a class='nav-link' href='/borrow-book.html'>Peminjaman Buku</a>"
+          );
+        }
+
         const urlGetBooks = "http://localhost:8080/api/books";
         $.ajax({
           url: urlGetBooks,

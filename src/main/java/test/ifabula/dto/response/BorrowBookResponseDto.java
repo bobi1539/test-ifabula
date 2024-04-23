@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class BorrowBookResponseDto {
     private Long id;
     private BookResponseDto book;
-    private Long userId;
+    private UserResponseDto user;
     private LocalDateTime borrowDate;
     private LocalDateTime returnDate;
     private LocalDateTime actualReturnDate;

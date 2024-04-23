@@ -11,6 +11,7 @@ import test.ifabula.dto.request.BorrowBookRequestDto;
 import test.ifabula.dto.request.ReturnBookRequestDto;
 import test.ifabula.dto.response.BookResponseDto;
 import test.ifabula.dto.response.BorrowBookResponseDto;
+import test.ifabula.dto.response.UserResponseDto;
 import test.ifabula.entity.Book;
 import test.ifabula.entity.BorrowBook;
 import test.ifabula.entity.User;
@@ -158,7 +159,7 @@ public class BookServiceImpl implements BookService {
         return BorrowBookResponseDto.builder()
                 .id(borrowBook.getId())
                 .book(mapBookResponse(borrowBook.getBook()))
-                .userId(borrowBook.getUser().getId())
+                .user(mapUserResponse(borrowBook.getUser()))
                 .borrowDate(borrowBook.getBorrowDate())
                 .returnDate(borrowBook.getReturnDate())
                 .actualReturnDate(borrowBook.getActualReturnDate())
@@ -198,5 +199,9 @@ public class BookServiceImpl implements BookService {
         borrowBook.setReturn(true);
         borrowBook.setActualReturnDate(LocalDateTime.now());
         borrowBookRepository.save(borrowBook);
+    }
+
+    private UserResponseDto mapUserResponse(User user) {
+        return UserResponseDto.builder().email(user.getEmail()).build();
     }
 }
