@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import test.ifabula.contant.ValidationMessage;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,5 +21,5 @@ public class BorrowBookRequestDto {
     private Long userId;
 
     @NotNull(message = ValidationMessage.RETURN_DATE_REQUIRED)
-    private LocalDateTime returnDate;
+    private Date returnDate;
 }

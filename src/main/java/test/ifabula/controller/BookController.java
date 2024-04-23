@@ -38,4 +38,11 @@ public class BookController {
     ) {
         return bookService.borrow(requestDto);
     }
+
+    @GetMapping("/{id}")
+    public BookResponseDto getById(
+            @PathVariable Long id
+    ) {
+        return bookService.getById(id);
+    }
 }

@@ -16,8 +16,8 @@
     ></script>
     <script src="helper.js"></script>
     <script>
-      const token = getToken();
-      if (token && token.startsWith("Ukd")) {
+      const apiKey = getCookieValue("X_API_KEY");
+      if (apiKey && apiKey.endsWith("MmQ=")) {
         window.location.href = "/";
       }
     </script>

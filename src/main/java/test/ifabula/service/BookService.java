@@ -14,4 +14,6 @@ public interface BookService {
     List<BookResponseDto> getAll();
 
     BorrowBookResponseDto borrow(BorrowBookRequestDto requestDto);
+
+    BookResponseDto getById(Long id);
 }

@@ -13,6 +13,7 @@ import test.ifabula.entity.Book;
 import test.ifabula.entity.BorrowBook;
 import test.ifabula.entity.User;
 import test.ifabula.exception.BusinessException;
+import test.ifabula.helper.Util;
 import test.ifabula.repository.BookRepository;
 import test.ifabula.repository.BorrowBookRepository;
 import test.ifabula.repository.UserRepository;
@@ -52,9 +53,17 @@ public class BookServiceImpl implements BookService {
         User user = findUserById(requestDto.getUserId());
         checkUserCanBorrow(user);
 
+        validateReturnDate(requestDto);
+
         BorrowBook borrowBook = saveBorrowBook(requestDto, book, user);
         updateBookIsBorrowed(book);
         return mapBorrowBookResponse(borrowBook);
+    }
+
+    @Override
+    public BookResponseDto getById(Long id) {
+        Book book = findBookById(id);
+        return mapBookResponse(book);
     }
 
     private Book saveBook(BookRequestDto requestDto) {
@@ -124,7 +133,7 @@ public class BookServiceImpl implements BookService {
                 .book(book)
                 .user(user)
                 .borrowDate(LocalDateTime.now())
-                .returnDate(requestDto.getReturnDate())
+                .returnDate(Util.fromDate(requestDto.getReturnDate()))
                 .isReturn(false)
                 .build();
     }
@@ -143,5 +152,12 @@ public class BookServiceImpl implements BookService {
     private void updateBookIsBorrowed(Book book) {
         book.setBorrow(true);
         bookRepository.save(book);
+    }
+
+    private void validateReturnDate(BorrowBookRequestDto requestDto) {
+        LocalDateTime returnDate = Util.fromDate(requestDto.getReturnDate());
+        if (returnDate.isBefore(LocalDateTime.now())) {
+            throw new BusinessException(GlobalMessage.RETURN_DATE_NOT_VALID);
+        }
     }
 }

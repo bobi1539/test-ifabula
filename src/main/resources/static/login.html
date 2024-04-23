@@ -16,8 +16,8 @@
     ></script>
     <script src="helper.js"></script>
     <script>
-      const token = getToken();
-      if (token && token.startsWith("Ukd")) {
+      const apiKey = getCookieValue("X_API_KEY");
+      if (apiKey && apiKey.endsWith("MmQ=")) {
         window.location.href = "/";
       }
     </script>
@@ -80,8 +80,10 @@
           success: function (data) {
             $("#alert").empty();
             if (data.code == 200) {
+              console.log(data);
               document.cookie = "userId=" + data.data.userId;
-              document.cookie = "token=" + data.data.token;
+              document.cookie = "accountType=" + data.data.accountType;
+              document.cookie = data.data.apiKeyName + "=" + data.data.apiKey;
               window.location.href = "/";
             }
           },

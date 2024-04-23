@@ -18,8 +18,8 @@
     <script src="helper.js"></script>
     <script>
       try {
-        const token = getToken();
-        if (!token || !token.startsWith("Ukd")) {
+        const apiKey = getCookieValue("X_API_KEY");
+        if (!apiKey || !apiKey.endsWith("MmQ=")) {
           window.location.href = "/login.html";
         }
       } catch (error) {
@@ -49,12 +49,80 @@
                 <a class="nav-link active" aria-current="page" href="/">Home</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">Buku</a>
+                <a class="nav-link" href="#">Buku Saya</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#" onclick="logout()">Logout</a>
               </li>
             </ul>
           </div>
         </div>
       </nav>
+      <div class="mt-4" id="alert"></div>
+      <div class="mt-4 p-4 row" id="body-book"></div>
+      <div
+        class="modal fade"
+        id="borrowBookModal"
+        tabindex="-1"
+        aria-labelledby="borrowBookModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form onsubmit="borrowBookAction(event)">
+              <div class="modal-header">
+                <h5 class="modal-title" id="borrowBookModalLabel">
+                  Pinjam Buku
+                </h5>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <input type="hidden" id="bookId" disabled />
+                <div class="mb-3">
+                  <label for="title" class="form-label">Judul</label>
+                  <input type="text" class="form-control" id="title" readonly />
+                </div>
+                <div class="mb-3">
+                  <label for="description" class="form-label">Deskripsi</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="description"
+                    readonly
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="returnDate" class="form-label"
+                    >Tanggal Kembali</label
+                  >
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="returnDate"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button
+                  id="btn-modal-close"
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Close
+                </button>
+                <button type="submit" class="btn btn-primary">Pinjam</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
@@ -64,10 +132,126 @@
     <script>
       function logout() {
         document.cookie =
-          "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+          "X_API_KEY=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         document.cookie =
           "userId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        document.cookie =
+          "accountType=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         document.location.href = "/login.html";
+      }
+
+      $(document).ready(function () {
+        const urlGetBooks = "http://localhost:8080/api/books";
+        $.ajax({
+          url: urlGetBooks,
+          type: "GET",
+          success: function (data) {
+            const bodyBook = $("#body-book");
+            bodyBook.empty();
+
+            data.data.map(function (book) {
+              const status = book.borrow ? "Dipinjam" : "Ready";
+              const disabled = book.borrow ? "disabled" : "";
+              const cardBook =
+                "<div class='col-md-3'>" +
+                "<div class='card m-1'>" +
+                "<div class='card-body'>" +
+                "<h5 class='card-title'>" +
+                book.title +
+                "</h5>" +
+                "<h6 class='card-subtitle mb-2 text-muted'>" +
+                status +
+                "</h6>" +
+                "<p class='card-text'>" +
+                book.description +
+                "</p>" +
+                "<button href='#' onclick='borrowBook(" +
+                book.id +
+                ")' class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#borrowBookModal' " +
+                disabled +
+                ">Pinjam</button>" +
+                "</div>" +
+                "</div>" +
+                "</div>";
+              bodyBook.append(cardBook);
+            });
+          },
+          error: function (xhr, status, error) {
+            console.error("Error: ", error);
+            const alert = $("#alert");
+            const message =
+              "<div class='alert alert-danger' role='alert'>" +
+              xhr.responseJSON.message +
+              "</div>";
+            alert.empty();
+            alert.append(message);
+          },
+        });
+      });
+
+      function borrowBook(bookId) {
+        const urlGetBookById = "http://localhost:8080/api/books/" + bookId;
+        $.ajax({
+          url: urlGetBookById,
+          type: "GET",
+          success: function (data) {
+            console.log(data.data.id);
+            $("#bookId").val(data.data.id);
+            $("#title").val(data.data.title);
+            $("#description").val(data.data.description);
+          },
+          error: function (xhr, status, error) {
+            console.error("Error: ", error);
+            const alert = $("#alert");
+            const message =
+              "<div class='alert alert-danger' role='alert'>" +
+              xhr.responseJSON.message +
+              "</div>";
+            alert.empty();
+            alert.append(message);
+          },
+        });
+      }
+
+      function borrowBookAction(event) {
+        event.preventDefault();
+        const urlBorrowBook = "http://localhost:8080/api/books/borrow";
+        const bookId = $("#bookId").val();
+        const returnDate = $("#returnDate").val();
+        const userId = atob(getCookieValue("userId"));
+        const jsonData = JSON.stringify({
+          bookId: bookId,
+          userId: userId,
+          returnDate: returnDate,
+        });
+
+        $.ajax({
+          url: urlBorrowBook,
+          type: "POST",
+          contentType: "application/json", // Tentukan tipe konten sebagai JSON
+          data: jsonData,
+          success: function (data) {
+            const alert = $("#alert");
+            alert.empty();
+            const message =
+              "<div class='alert alert-success' role='alert'>" +
+              data.message +
+              "</div>";
+            alert.append(message);
+            $("#btn-modal-close").click();
+          },
+          error: function (xhr, status, error) {
+            console.error("Error: ", error);
+            const alert = $("#alert");
+            const message =
+              "<div class='alert alert-danger' role='alert'>" +
+              xhr.responseJSON.message +
+              "</div>";
+            alert.empty();
+            alert.append(message);
+            $("#btn-modal-close").click();
+          },
+        });
       }
     </script>
   </body>

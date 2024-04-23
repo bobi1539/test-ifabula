@@ -1,9 +1,14 @@
 package test.ifabula.helper;
 
+import org.springframework.cglib.core.Local;
 import test.ifabula.contant.GlobalMessage;
 import test.ifabula.exception.BusinessException;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Base64;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,5 +40,10 @@ public final class Util {
     public static String decodeFromBase64(String base64) {
         byte[] decodeBytes = Base64.getDecoder().decode(base64);
         return new String(decodeBytes);
+    }
+
+    public static LocalDateTime fromDate(Date date) {
+        Instant instant = date.toInstant();
+        return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
     }
 }
