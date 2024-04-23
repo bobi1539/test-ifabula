@@ -2,17 +2,20 @@ package test.ifabula.service.impl;
 
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import test.ifabula.contant.GlobalMessage;
 import test.ifabula.dto.request.BookRequestDto;
 import test.ifabula.dto.request.BorrowBookRequestDto;
+import test.ifabula.dto.request.ReturnBookRequestDto;
 import test.ifabula.dto.response.BookResponseDto;
 import test.ifabula.dto.response.BorrowBookResponseDto;
 import test.ifabula.entity.Book;
 import test.ifabula.entity.BorrowBook;
 import test.ifabula.entity.User;
 import test.ifabula.exception.BusinessException;
+import test.ifabula.helper.SpecificationUtil;
 import test.ifabula.helper.Util;
 import test.ifabula.repository.BookRepository;
 import test.ifabula.repository.BorrowBookRepository;
@@ -40,7 +43,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<BookResponseDto> getAll() {
-        List<Book> books = bookRepository.findByIsDeleted(false);
+        List<Book> books = bookRepository.findByIsDeletedOrderByIdAsc(false);
         return mapBookResponseList(books);
     }
 
@@ -56,7 +59,7 @@ public class BookServiceImpl implements BookService {
         validateReturnDate(requestDto);
 
         BorrowBook borrowBook = saveBorrowBook(requestDto, book, user);
-        updateBookIsBorrowed(book);
+        updateBookIsBorrowed(book, true);
         return mapBorrowBookResponse(borrowBook);
     }
 
@@ -64,6 +67,21 @@ public class BookServiceImpl implements BookService {
     public BookResponseDto getById(Long id) {
         Book book = findBookById(id);
         return mapBookResponse(book);
+    }
+
+    @Override
+    public List<BorrowBookResponseDto> getBorrow(Long userId, boolean isReturn) {
+        List<BorrowBook> borrowBooks = borrowBookRepository.findAll(searchBy(userId, isReturn));
+        return borrowBooks.stream().map(this::mapBorrowBookResponse).toList();
+    }
+
+    @Override
+    @Transactional
+    public BorrowBookResponseDto returnBook(ReturnBookRequestDto requestDto) {
+        BorrowBook borrowBook = findBorrowById(requestDto.getBorrowId());
+        updateReturnBook(borrowBook);
+        updateBookIsBorrowed(borrowBook.getBook(), false);
+        return mapBorrowBookResponse(borrowBook);
     }
 
     private Book saveBook(BookRequestDto requestDto) {
@@ -91,9 +109,7 @@ public class BookServiceImpl implements BookService {
                 .description(book.getDescription())
                 .isBorrow(book.isBorrow())
                 .createdAt(book.getCreatedAt())
-                .createdBy(book.getCreatedBy())
                 .updatedAt(book.getUpdatedAt())
-                .updatedBy(book.getUpdatedBy())
                 .isDeleted(book.isDeleted())
                 .build();
     }
@@ -145,12 +161,13 @@ public class BookServiceImpl implements BookService {
                 .userId(borrowBook.getUser().getId())
                 .borrowDate(borrowBook.getBorrowDate())
                 .returnDate(borrowBook.getReturnDate())
+                .actualReturnDate(borrowBook.getActualReturnDate())
                 .isReturn(borrowBook.isReturn())
                 .build();
     }
 
-    private void updateBookIsBorrowed(Book book) {
-        book.setBorrow(true);
+    private void updateBookIsBorrowed(Book book, boolean isBorrow) {
+        book.setBorrow(isBorrow);
         bookRepository.save(book);
     }
 
@@ -159,5 +176,26 @@ public class BookServiceImpl implements BookService {
         if (returnDate.isBefore(LocalDateTime.now())) {
             throw new BusinessException(GlobalMessage.RETURN_DATE_NOT_VALID);
         }
+    }
+
+    private Specification<BorrowBook> searchBy(Long userId, boolean isReturn) {
+        Specification<BorrowBook> specification = SpecificationUtil.searchAttributeObject("user", findUserById(userId));
+        return specification
+                .and(SpecificationUtil.searchAttributeBoolean("isReturn", isReturn))
+                .and(SpecificationUtil.searchAttributeBoolean("isDeleted", false));
+    }
+
+    private BorrowBook findBorrowById(Long borrowId) {
+        return borrowBookRepository.findByIdAndIsDeleted(borrowId, false)
+                .orElseThrow(() -> new BusinessException(GlobalMessage.DATA_NOT_FOUND));
+    }
+
+    private void updateReturnBook(BorrowBook borrowBook) {
+        if (borrowBook.isReturn()) {
+            throw new BusinessException(GlobalMessage.BOOK_IS_RETURN);
+        }
+        borrowBook.setReturn(true);
+        borrowBook.setActualReturnDate(LocalDateTime.now());
+        borrowBookRepository.save(borrowBook);
     }
 }

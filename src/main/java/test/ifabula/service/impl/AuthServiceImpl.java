@@ -99,9 +99,7 @@ public class AuthServiceImpl implements AuthService {
                 .email(user.getEmail())
                 .accountType(user.getAccountType())
                 .createdAt(user.getCreatedAt())
-                .createdBy(user.getCreatedBy())
                 .updatedAt(user.getUpdatedAt())
-                .updatedBy(user.getUpdatedBy())
                 .isDeleted(user.isDeleted())
                 .build();
     }

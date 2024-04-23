@@ -19,5 +19,6 @@ public class BorrowBookResponseDto {
     private Long userId;
     private LocalDateTime borrowDate;
     private LocalDateTime returnDate;
+    private LocalDateTime actualReturnDate;
     private boolean isReturn;
 }

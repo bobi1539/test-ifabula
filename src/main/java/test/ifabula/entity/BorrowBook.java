@@ -37,6 +37,9 @@ public class BorrowBook extends BaseEntity {
     @Column(name = "return_date")
     private LocalDateTime returnDate;
 
+    @Column(name = "actual_return_date")
+    private LocalDateTime actualReturnDate;
+
     @Column(name = "is_return")
     private boolean isReturn;
 }

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Book</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"
+    ></script>
+    <script src="helper.js"></script>
+    <script>
+      try {
+        const apiKey = getCookieValue("X_API_KEY");
+        if (!apiKey || !apiKey.endsWith("MmQ=")) {
+          window.location.href = "/login.html";
+        }
+      } catch (error) {
+        window.location.href = "/login.html";
+      }
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">Test</a>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+            aria-controls="navbarNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="/">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" href="/my-book.html">Buku Saya</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#" onclick="logout()">Logout</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      <h2 class="my-4">Buku Yang Dipinjam</h2>
+      <div class="mt-4" id="alert"></div>
+      <div id="div-card">
+        <div class="card p-4 col-md-6">
+          <input type="hidden" id="borrowId" disabled />
+          <div class="mb-3">
+            <label for="title" class="form-label">Judul</label>
+            <input type="text" class="form-control" id="title" readonly />
+          </div>
+          <div class="mb-3">
+            <label for="description" class="form-label">Deskripsi</label>
+            <input type="text" class="form-control" id="description" readonly />
+          </div>
+          <div class="mb-3">
+            <label for="borrowDate" class="form-label">Tanggal Pinjam</label>
+            <input type="text" class="form-control" id="borrowDate" readonly />
+          </div>
+          <div class="mb-3">
+            <label for="returnDate" class="form-label">Tanggal Kembali</label>
+            <input type="text" class="form-control" id="returnDate" readonly />
+          </div>
+          <button class="btn btn-primary col-md-6">Kembalikan Buku</button>
+        </div>
+      </div>
+    </div>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      function logout() {
+        document.cookie =
+          "X_API_KEY=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        document.cookie =
+          "userId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        document.cookie =
+          "accountType=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        document.location.href = "/login.html";
+      }
+
+      $(document).ready(function () {
+        const urlGetBooks = "http://localhost:8080/api/books/borrow";
+        const userId = atob(getCookieValue("userId"));
+        $.ajax({
+          url: urlGetBooks,
+          type: "GET",
+          data: {
+            userId: userId,
+            isReturn: false,
+          },
+          success: function (data) {
+            if (data.data.length == 0) {
+              $("#div-card").empty();
+            } else {
+              $("#borrowId").val(data.data[0].id);
+              $("#title").val(data.data[0].book.title);
+              $("#description").val(data.data[0].book.description);
+              $("#borrowDate").val(data.data[0].borrowDate);
+              $("#returnDate").val(data.data[0].returnDate);
+            }
+          },
+          error: function (xhr, status, error) {
+            console.error("Error: ", error);
+            const alert = $("#alert");
+            const message =
+              "<div class='alert alert-danger' role='alert'>" +
+              xhr.responseJSON.message +
+              "</div>";
+            alert.empty();
+            alert.append(message);
+          },
+        });
+      });
+    </script>
+  </body>
+</html>

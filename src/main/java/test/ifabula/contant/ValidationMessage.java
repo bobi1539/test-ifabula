@@ -16,4 +16,5 @@ public final class ValidationMessage {
     public static final String BOOK_ID_REQUIRED = "Id Buku Tidak Boleh Kosong";
     public static final String USER_ID_REQUIRED = "Id User Tidak Boleh Kosong";
     public static final String RETURN_DATE_REQUIRED = "Tanggal Kembali Tidak Boleh Kosong";
+    public static final String BORROW_ID_REQUIRED = "Borrow Id Tidak Boleh Kosong";
 }

@@ -13,6 +13,7 @@ public enum GlobalMessage {
     PASSWORD_MUST_NOT_CONTAIN_SYMBOL(HttpStatus.BAD_REQUEST, "Password Tidak Boleh Mengandung Spesial Karakter"),
     TOKEN_NOT_VALID(HttpStatus.BAD_REQUEST, "Token Tidak Valid"),
     BOOK_IS_BORROW(HttpStatus.BAD_REQUEST, "Buku Sedang Dipinjam"),
+    BOOK_IS_RETURN(HttpStatus.BAD_REQUEST, "Buku Sudah Dikembalikan"),
     RETURN_DATE_NOT_VALID(HttpStatus.BAD_REQUEST, "Tanggal Kembali Harus Setelah Hari Ini"),
     CANNOT_BORROW_BOOK(HttpStatus.BAD_REQUEST, "Kembalikan Buku Yang Sebelumnya Terlebih Dahulu"),
     CANNOT_INSTANCE_HELPER_CLASS(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error"),

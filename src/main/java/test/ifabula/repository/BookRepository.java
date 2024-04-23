@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface BookRepository extends JpaRepository<Book, Long> {
 
-    List<Book> findByIsDeleted(boolean isDeleted);
+    List<Book> findByIsDeletedOrderByIdAsc(boolean isDeleted);
 
     Optional<Book> findByIdAndIsDeleted(Long id, boolean isDeleted);
 }

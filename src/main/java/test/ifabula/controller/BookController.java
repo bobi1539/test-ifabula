@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import test.ifabula.contant.Endpoint;
 import test.ifabula.dto.request.BookRequestDto;
 import test.ifabula.dto.request.BorrowBookRequestDto;
+import test.ifabula.dto.request.ReturnBookRequestDto;
 import test.ifabula.dto.response.BookResponseDto;
 import test.ifabula.dto.response.BorrowBookResponseDto;
 import test.ifabula.service.BookService;
@@ -44,5 +45,20 @@ public class BookController {
             @PathVariable Long id
     ) {
         return bookService.getById(id);
+    }
+
+    @GetMapping("/borrow")
+    public List<BorrowBookResponseDto> getBorrow(
+            @RequestParam Long userId,
+            @RequestParam boolean isReturn
+    ) {
+        return bookService.getBorrow(userId, isReturn);
+    }
+
+    @PostMapping("/return")
+    public BorrowBookResponseDto returnBook(
+            @RequestBody @Valid ReturnBookRequestDto requestDto
+    ) {
+        return bookService.returnBook(requestDto);
     }
 }
